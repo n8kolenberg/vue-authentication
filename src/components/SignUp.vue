@@ -63,7 +63,7 @@ export default {
               password: this.password
           };
           console.log(formData);
-          axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyCijIt-M7FMOwuWVM8moKJPCqJoCOwWuZc', {
+          axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=', {
               email: formData.email,
               password: formData.password,
               returnSecureToken: true,
