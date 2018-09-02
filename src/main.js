@@ -3,9 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
 
 // Require the main Sass manifest file
-require('./assets/sass/main.scss');
+require('./assets/sass/main.scss')
+
+axios.defaults.baseURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty'
 
 Vue.config.productionTip = false
 
