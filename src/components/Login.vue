@@ -65,16 +65,9 @@ export default {
       let formData = {
         email: this.email,
         password: this.password
-      }
-      axios.post('/verifyPassword?key=AIzaSyCijIt-M7FMOwuWVM8moKJPCqJoCOwWuZc', {
-        email: formData.email,
-        password: formData.password,
-        returnSecureToken: true
-      })
-      .then(res => {
-        console.log('Sign Up Successful: ');
-        console.log(res.data);
-      });
+      };
+      console.log(this.$store);
+      this.$store.dispatch('login', {email: formData.email, password: formData.password});
     }
   }
 }

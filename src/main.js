@@ -4,14 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import store from './store.js'
 
 // Require the main Sass manifest file
 require('./assets/sass/main.scss')
 
-axios.defaults.baseURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty';
-axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.get['Accept'] = 'application/json';
-
+axios.defaults.baseURL = 'https://vue-authentication-69008.firebaseio.com/'
 
 Vue.config.productionTip = false
 
@@ -19,6 +17,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

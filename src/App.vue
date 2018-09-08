@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <app-header></app-header>
-    <img src="./assets/logo.png">
+    <app-logo></app-logo>
     <transition name="slide" mode="out-in">
       <router-view></router-view>
     </transition>
@@ -10,6 +10,7 @@
 
 <script>
 import Header from './components/Header.vue';
+import Logo from './components/Logo.vue';
 
 export default {
   name: 'App',
@@ -19,8 +20,10 @@ export default {
     }
   },
   components: {
-    appHeader: Header
-  }
+    appHeader: Header,
+    appLogo: Logo
+  },
+  
 }
 </script>
 

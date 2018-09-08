@@ -63,12 +63,7 @@ export default {
               password: this.password
           };
           console.log(formData);
-          axios.post('/signupNewUser?key=AIzaSyCijIt-M7FMOwuWVM8moKJPCqJoCOwWuZc', {
-              email: formData.email,
-              password: formData.password,
-              returnSecureToken: true,
-          })
-          .then( res => console.log(res.data));
+          this.$store.dispatch('signup', {email: formData.email, password: formData.password});
       }
   }
 }
