@@ -9,7 +9,7 @@ import store from './store.js'
 // Require the main Sass manifest file
 require('./assets/sass/main.scss')
 
-axios.defaults.baseURL = 'https://vue-authentication-69008.firebaseio.com/'
+axios.defaults.baseURL = process.env.DB_URL;
 
 Vue.config.productionTip = false
 
