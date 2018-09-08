@@ -8,7 +8,7 @@
         <div class="field">
           <label class="label">Email</label>
           <div class="control has-icons-left">
-            <input class="input is-medium " type="email" placeholder="Email" v-bind="email">
+            <input class="input is-medium " type="email" placeholder="Email" v-model="email">
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
@@ -22,7 +22,7 @@
         <div class="field">
           <label class="label">Password</label>
           <div class="control has-icons-left">
-            <input class="input is-medium" type="password" placeholder="Password" v-bind="password">
+            <input class="input is-medium" type="password" placeholder="Password" v-model="password">
             <span class="icon is-small is-left">
               <i class="fas fa-unlock-alt"></i>
             </span>
@@ -63,7 +63,7 @@ export default {
               password: this.password
           };
           console.log(formData);
-          axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=', {
+          axios.post('/signupNewUser?key=AIzaSyCijIt-M7FMOwuWVM8moKJPCqJoCOwWuZc', {
               email: formData.email,
               password: formData.password,
               returnSecureToken: true,

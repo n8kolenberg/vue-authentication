@@ -8,7 +8,7 @@
         <div class="field">
           <label class="label">Email</label>
           <div class="control has-icons-left">
-            <input class="input is-medium" type="email" placeholder="Email" v-bind="email">
+            <input class="input is-medium" type="email" placeholder="Email" v-model="email">
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
@@ -22,7 +22,7 @@
         <div class="field">
           <label class="label">Password</label>
           <div class="control has-icons-left">
-            <input class="input is-medium" type="password" placeholder="Password" v-bind="password">
+            <input class="input is-medium" type="password" placeholder="Password" v-model="password">
             <span class="icon is-small is-left">
               <i class="fas fa-unlock-alt"></i>
             </span>
@@ -35,7 +35,7 @@
        <div class="column is-1 is-offset-one-quarter">
         <div class="field">
           <div class="control">
-            <button class="button is-info">
+            <button class="button is-info" @click="login">
               Login
             </button>
           </div>
@@ -58,6 +58,23 @@ export default {
       msg: 'Welcome to Your Vue.js APPZIZZLE',
       email: '',
       password: ''
+    }
+  },
+  methods: {
+    login() {
+      let formData = {
+        email: this.email,
+        password: this.password
+      }
+      axios.post('/verifyPassword?key=AIzaSyCijIt-M7FMOwuWVM8moKJPCqJoCOwWuZc', {
+        email: formData.email,
+        password: formData.password,
+        returnSecureToken: true
+      })
+      .then(res => {
+        console.log('Sign Up Successful: ');
+        console.log(res.data);
+      });
     }
   }
 }

@@ -8,7 +8,10 @@ import axios from 'axios'
 // Require the main Sass manifest file
 require('./assets/sass/main.scss')
 
-axios.defaults.baseURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty'
+axios.defaults.baseURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty';
+axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
+axios.defaults.headers.get['Accept'] = 'application/json';
+
 
 Vue.config.productionTip = false
 
