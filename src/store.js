@@ -31,6 +31,13 @@ export default new Vuex.Store({
   },
 
   actions: {
+    //Firebase's idToken is only valid for 3600 seconds (1hour) and so we need to log the user out automatically
+    //Once the token has expired - we're going to dispatch this in the login action
+    setLogoutTimer ({commit, dispatch}, expirationTime) {
+        setTimeout(() => {
+            dispatch('logout');
+        }, expirationTime * 1000);
+    },
     signup ({commit, dispatch}, authData) {
         AuthAxios.post('/signupNewUser?key=' + process.env.DB_API_KEY, {
             email: authData.email,
@@ -45,19 +52,41 @@ export default new Vuex.Store({
                 token: res.data.idToken,
                 userId: res.data.localId
             });
+            //We can't just pass the expiresIn data to the localStorage because it will be 3600 seconds from the moment we reload
+            //That's why we have to calculate the moment the session expires and save that in localStorage
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000);
+            //We're going to store the idToken in the browser's localStorage so we can send it to the backend and keep the user signed in
+            localStorage.setItem('token', res.data.idToken);
+            localStorage.setItem('userId', res.data.userId);
+            localStorage.setItem('expirationDate', expirationDate)
+
+
             //Apart from storing the user in the normal Authentication database of Firebase
-            //We also want to store the user in our other Firebase database
+            //We also want to store the user in our other Firebase database 
+            //And we call the storeUser action to do so
             dispatch('storeUser', authData)
+            //After Firebase's idToken expires, we need to log the user out
+            dispatch('setLogoutTimer', res.data.expiresIn);
         });
     },
 
-    login ({commit}, authData) {
+    login ({commit, dispatch}, authData) {
         AuthAxios.post('/verifyPassword?key=' + process.env.DB_API_KEY, {
             email: authData.email,
             password: authData.password,
             returnSecureToken: true
         })
         .then(res => {
+            //We can't just pass the expiresIn data to the localStorage because it will be 3600 seconds from the moment we reload
+            //That's why we have to calculate the moment the session expires and save that in localStorage
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + res.data.expiresIn * 1000);
+            //We're going to store the idToken in the browser's localStorage so we can send it to the backend and keep the user signed in
+            localStorage.setItem('token', res.data.idToken);
+            localStorage.setItem('userId', res.data.userId);
+            localStorage.setItem('expirationDate', expirationDate)
+
             console.log('Login Successful: ');
             console.log(res.data);
             commit('authUser', {
@@ -66,6 +95,8 @@ export default new Vuex.Store({
             });
             //Redirecting the user to the User info page.
             router.replace("/");
+            //After Firebase's idToken expires, we need to log the user out
+            dispatch('setLogoutTimer', res.data.expiresIn);
         })
         .catch(error => console.log(error));
         
@@ -81,6 +112,8 @@ export default new Vuex.Store({
         .then(res => console.log(res.data))
         .catch(error => console.log(error));
     },
+    //This method will be used to initially fetch the user once they're authenticated
+    //Right now it takes the first user in the array statically.
     fetchUser ({commit, state}) {
         if (!state.idToken) {
           return
@@ -100,9 +133,36 @@ export default new Vuex.Store({
             commit('storeUserMutation', users[0]);
         })
     },
+
+    tryAutoLogin({commit}) {
+        const token = localStorage.getItem('token');
+        if(!token) {
+            return
+        }
+        const expirationDate = localStorage.getItem('expirationDate');
+        const now = new Date();
+        if(now >= expirationDate) {
+            return 
+        } 
+        const userId = localStorage.getItem('userId');
+        commit('authUser', {
+            token: token,
+            userId: userId
+
+        })
+
+    },
+
+
+
+
     logout ({commit}) {
         //Calling the clearAuthData mutation
         commit('clearAuthData');
+        //Removing the data from the localStorage when the user logs out
+        localStorage.removeItem('expirationDate');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('token');
         //We use the router to redirect the user to login page after logging out
         router.replace('/login');
     }

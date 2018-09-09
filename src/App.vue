@@ -23,7 +23,10 @@ export default {
     appHeader: Header,
     appLogo: Logo
   },
-  
+  created() {
+    //Going to check if the user was logged in and if so and they refresh the browser, they should stay logged in
+    this.$store.dispatch('tryAutoLogin');
+  }
 }
 </script>
 
