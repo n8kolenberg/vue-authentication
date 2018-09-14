@@ -29,7 +29,14 @@ export default new Router({
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      beforeEnter (to, from, next) {
+        if(store.getters.isAuthenticated) {
+          next('/');
+        } else {
+          next();
+        }
+      }
     },
     {
       path: '/signup',

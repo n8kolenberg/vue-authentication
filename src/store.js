@@ -129,6 +129,7 @@ export default new Vuex.Store({
                 user.id = key;
                 users.push(user);
             }
+            console.log("User fetched:");
             console.log(users);
             commit('storeUserMutation', users[0]);
         })
@@ -148,13 +149,9 @@ export default new Vuex.Store({
         commit('authUser', {
             token: token,
             userId: userId
-
         })
 
     },
-
-
-
 
     logout ({commit}) {
         //Calling the clearAuthData mutation

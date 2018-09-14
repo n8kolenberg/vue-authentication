@@ -8,28 +8,113 @@
         <div class="field">
           <label class="label">Email</label>
           <div class="control has-icons-left">
-            <input class="input is-medium " type="email" placeholder="Email" v-model="email">
+            <input class="input is-medium " :class="{'invalidate': $v.email.$error, 'is-success': !$v.email.$invalid }" id="email" type="email" placeholder="Email" v-model="email"
+              @blur="$v.email.$touch()"
+            > <!--$v and $touch are coming from the validator through vuelidate--> <!--You an check this with {{$v}}-->
             <span class="icon is-small is-left">
               <i class="fas fa-envelope"></i>
             </span>
           </div>
+          <p>
+            {{$v}}
+          </p> 
+
+          <div v-if="!$v.email.email" class="notification is-danger">  
+            <p>
+              <span class="icon is-small">
+                <i class="fas fa-exclamation-circle"></i>
+              </span>
+              <span>Please enter a valid email address</span>
+            </p>
+          </div>
+          
         </div>
        </div>     
      </div> <!-- End columns -->
+
+    <div class="columns">
+       <div class="column is-half is-offset-one-quarter">
+        <div class="field">
+          <label class="label">Age</label>
+          <div class="control has-icons-left">
+            <input class="input is-medium " :class="{'invalidate': $v.age.$error, 'is-success': !$v.age.$invalid }" type="text" placeholder="Age" v-model.number="age"
+              @blur="$v.age.$touch()"
+            >
+            <span class="icon is-small is-left">
+              <i class="fas fa-birthday-cake"></i>
+            </span>
+          </div>
+          <div v-if="!$v.age.minVal" class="notification is-danger">  
+            <p>
+              <span class="icon is-small">
+                <i class="fas fa-exclamation-circle"></i>
+              </span>
+              <span>You have to be {{$v.age.$params.minVal.min}} or older to sign up</span>
+            </p>
+          </div>
+
+          <div v-if="!$v.age.numeric" class="notification is-danger">  
+            <p>
+              <span class="icon is-small">
+                <i class="fas fa-exclamation-circle"></i>
+              </span>
+              <span>Please enter a numerical value</span>
+            </p>
+          </div>
+        </div>
+       </div>     
+     </div> <!-- End columns -->
+
 
      <div class="columns">
        <div class="column is-half is-offset-one-quarter">
         <div class="field">
           <label class="label">Password</label>
           <div class="control has-icons-left">
-            <input class="input is-medium" type="password" placeholder="Password" v-model="password">
+            <input class="input is-medium" type="password" placeholder="Password" v-model="password"
+              @blur="$v.password.$touch()"
+              :class="{'invalidate': $v.password.$error, 'is-success': !$v.password.$invalid }"
+            >
             <span class="icon is-small is-left">
               <i class="fas fa-unlock-alt"></i>
             </span>
           </div>
+          <div v-if="!$v.password.minLen" class="notification is-danger">  
+            <p>
+              <span class="icon is-small">
+                <i class="fas fa-exclamation-circle"></i>
+              </span>
+              <span>Please enter a password of at least {{$v.password.$params.minLen.min}} characters</span>
+            </p>
+          </div>
         </div>
       </div>
-     </div>
+     </div> <!--End Columens-->
+
+     <div class="columns">
+       <div class="column is-half is-offset-one-quarter">
+        <div class="field">
+          <label class="label">Confirm Password</label>
+          <div class="control has-icons-left">
+            <input class="input is-medium"  type="password" placeholder="Confirm Password" v-model="confirmPassword"
+              @blur="$v.confirmPassword.$touch()"
+              :class="{'invalidate': $v.confirmPassword.$error, 'is-success': !$v.confirmPassword.$invalid }"
+            >
+            <span class="icon is-small is-left">
+              <i class="fas fa-check-double"></i>
+            </span>
+          </div>
+          <div v-if="!$v.confirmPassword.sameAs" class="notification is-danger">  
+            <p>
+              <span class="icon is-small">
+                <i class="fas fa-exclamation-circle"></i>
+              </span>
+              <span>Please enter a password of at least {{$v.password.$params.minLen.min}} characters</span>
+            </p>
+          </div>
+        </div>
+       </div>     
+     </div> <!-- End columns -->
 
      <div class="columns">
        <div class="column is-1 is-offset-one-quarter">
@@ -47,12 +132,33 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { required, email, numeric, minValue, minLength, sameAs } from 'vuelidate/lib/validators' //full list can be found on vuelidate documentation page
 export default {
   data () {
     return {
       email: "",
-      password: ""
+      age: null,
+      password: "",
+      confirmPassword: ""
+    }
+  },
+  //This is possible through vuelidate package
+  validations: {
+    email: {
+      required,
+      email //ES6 syntax
+    }, //has to have the same name as the property defined in data(){}
+    age: {
+      required,
+      numeric,
+      minVal: minValue(18)//Minimum age will be 18 otherwise it will be invalid input
+    },
+    password: {
+      required,
+      minLen: minLength(6)
+    },
+    confirmPassword: {
+      sameAs: sameAs('password')
     }
   },
   methods: {
@@ -84,5 +190,9 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.invalidate {
+  border: #ff3860 2px solid
 }
 </style>
