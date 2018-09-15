@@ -15,9 +15,6 @@
               <i class="fas fa-envelope"></i>
             </span>
           </div>
-          <p>
-            {{$v}}
-          </p> 
 
           <div v-if="!$v.email.email" class="notification is-danger">  
             <p>
@@ -97,7 +94,7 @@
           <label class="label">Confirm Password</label>
           <div class="control has-icons-left">
             <input class="input is-medium"  type="password" placeholder="Confirm Password" v-model="confirmPassword"
-              @blur="$v.confirmPassword.$touch()"
+              @change="$v.confirmPassword.$touch()"
               :class="{'invalidate': $v.confirmPassword.$error, 'is-success': !$v.confirmPassword.$invalid }"
             >
             <span class="icon is-small is-left">
@@ -109,7 +106,7 @@
               <span class="icon is-small">
                 <i class="fas fa-exclamation-circle"></i>
               </span>
-              <span>Please enter a password of at least {{$v.password.$params.minLen.min}} characters</span>
+              <span>This needs to be the same as your password</span>
             </p>
           </div>
         </div>
@@ -120,7 +117,7 @@
        <div class="column is-1 is-offset-one-quarter">
          <div class="field">
            <div class="control">
-            <button class="button is-primary" @click="signup">Sign Up</button>
+            <button class="button is-primary" @click="signup" :disabled="$v.$invalid">Sign Up</button>
            </div>
          </div>
        </div>
@@ -133,6 +130,8 @@
 
 <script>
 import { required, email, numeric, minValue, minLength, sameAs } from 'vuelidate/lib/validators' //full list can be found on vuelidate documentation page
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -146,8 +145,18 @@ export default {
   validations: {
     email: {
       required,
-      email //ES6 syntax
-    }, //has to have the same name as the property defined in data(){}
+      email, //ES6 syntax
+      unique: value => {
+        if(value === '') return true;
+        return axios.get('/users.json?orderBy="email"&equalTo="' + value + '"') //The url is specific to FireBase
+        .then(res => {
+          console.log(res.data);
+          //We check if the DB returns a user object
+          //We then check if this object has any keys - if so, we invalidate and vice versa
+          return Object.keys(res.data).length === 0 ? true : false;
+        });
+        }
+      }, //has to have the same name as the property defined in data(){}
     age: {
       required,
       numeric,
@@ -158,7 +167,10 @@ export default {
       minLen: minLength(6)
     },
     confirmPassword: {
-      sameAs: sameAs('password')
+      // sameAs: sameAs('password') This is the same as doing the below but allows you to check with more flexibility
+      sameAs: sameAs(vm => {
+        return vm.password
+      })
     }
   },
   methods: {
